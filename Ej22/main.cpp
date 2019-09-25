@@ -3,9 +3,7 @@
 #include "PriorityQueue.h"
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
-#include <algorithm>
 #include <string>
 
 using namespace std;
@@ -27,6 +25,7 @@ void resolver(PriorityQueue<tPaciente>& colap, int& eventos) {
 	tPaciente paciente;
 
 	while (eventos != 0) {
+		eventos--;
 		std::cin >> tipo;
 
 		if (tipo =='I') {
@@ -34,7 +33,6 @@ void resolver(PriorityQueue<tPaciente>& colap, int& eventos) {
 			std::cin >> paciente.gravedad;
 			paciente.tiempo = cont;
 			colap.push(paciente);
-			eventos--;
 			cont++;
 		}
 		else {
