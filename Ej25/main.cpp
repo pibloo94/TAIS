@@ -19,17 +19,19 @@ bool operator <(tSolucion const& a, tSolucion const& b) {
 
 void resover(PriorityQueue<tSolucion>& colap, vector<int>& pajaros) {
 
-	int i = 0, cont = 0, primero;
+	int i = 0, cont = 0, primero, totalPajaros = 2;
 	vector<int> vsol;
 
 	//mientras haya pajaros que van llegando
-	while (i < (pajaros.size()/2)) {
+	while (i < (pajaros.size() / 2)) {
 
 		//para controlar que se unen en parejas
-		while (cont != 0 || cont%2 != 0) {
+		while (cont < totalPajaros) {
 			colap.push({ pajaros.at(cont) });
 			cont++;
 		}
+
+		totalPajaros += 2;
 
 		while (!colap.empty()) {
 			vsol.push_back(colap.top().edad);
@@ -41,6 +43,7 @@ void resover(PriorityQueue<tSolucion>& colap, vector<int>& pajaros) {
 
 		std::cout << vsol[primero] << " ";
 
+		vsol.clear();
 		i++;
 	}
 }
