@@ -13,28 +13,35 @@ struct tSolucion {
 	int edad = 0;
 };
 
-bool operator <(tSolucion const& a, tSolucion const&b) {
+bool operator <(tSolucion const& a, tSolucion const& b) {
 	return (a.edad < b.edad);
 }
 
 void resover(PriorityQueue<tSolucion>& colap, vector<int>& pajaros) {
 
-	int cont, primero;
+	int i = 0, cont = 0, primero;
+	vector<int> vsol;
 
 	//mientras haya pajaros que van llegando
-	while (pajaros.size() != 0) {
-		cont = 0;
+	while (i < (pajaros.size()/2)) {
 
 		//para controlar que se unen en parejas
-		while (cont != 2) {
+		while (cont != 0 || cont%2 != 0) {
 			colap.push({ pajaros.at(cont) });
-			pajaros.pop_back();
 			cont++;
 		}
 
-		primero = colap.size() / 2;
+		while (!colap.empty()) {
+			vsol.push_back(colap.top().edad);
+			colap.pop();
+		}
 
-		std::cout << primero << " ";
+		primero = vsol.size() / 2;
+		colap.push({ vsol[primero] });
+
+		std::cout << vsol[primero] << " ";
+
+		i++;
 	}
 }
 
@@ -49,7 +56,7 @@ bool resuelveCaso() {
 
 	//cola de prioridad inicial (solo con el pajaro de cabeza)
 	PriorityQueue<tSolucion> colap;
-	colap.push({cabeza});
+	colap.push({ cabeza });
 
 	//vector de pajaros que van uniendose
 	n = n * 2;
