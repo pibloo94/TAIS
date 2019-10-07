@@ -8,10 +8,13 @@
 
 //Coste: O(N*log n)
 
+#include "PriorityQueue.h"
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include "PriorityQueue.h"
+
+
 using namespace std;
 
 struct tarea {
@@ -25,18 +28,29 @@ bool operator<(tarea const& a, tarea const& b) {
 }
 
 bool resolver(int &T, PriorityQueue<tarea> &cola) {
+	bool esConflicto = false;
 	tarea aux;
-	while(cola.size() > 1 && cola.top().final <= T){
-		aux = cola.top(); cola.pop();
-		if (aux.final > cola.top().inicio)
-			return true;
+	int iniSig = 0;
+
+	while (!esConflicto && !cola.empty() && cola.top().inicio < T) {
+		aux = cola.top(); 
+		cola.pop();
+
+		if (iniSig > aux.inicio) {
+			esConflicto = true;
+		}
+
+		iniSig = aux.final;
+
 		if (aux.periodo > 0) {
 			aux.inicio += aux.periodo;
 			aux.final += aux.periodo;
 			cola.push(aux);
 		}
+
 	}
-	return false;
+
+	return esConflicto;
 }
 
 bool resuelveCaso() {
@@ -58,8 +72,9 @@ bool resuelveCaso() {
 	   cin >> ini >> fin >> per;
 	   cola.push({ ini,fin,per });
    }
-   bool conflicto;
-   conflicto = resolver(T, cola);
+
+   bool conflicto = resolver(T, cola);
+
    if (conflicto)
 	   cout << "SI\n";
    else
