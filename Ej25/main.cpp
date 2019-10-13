@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm> 
 #include <vector>
 
 using namespace std;
@@ -17,39 +18,46 @@ bool operator <(tSolucion const& a, tSolucion const& b) {
 	return (a.edad < b.edad);
 }
 
-void resover(PriorityQueue<tSolucion>& colap, vector<int>& pajaros) {
+void resolver(int& cabeza, int& n) {
+	PriorityQueue<int, std::greater<int>> cola_menores;
+	PriorityQueue<int, std::less<int>> cola_mayores;
 
-	int i = 0, cont = 0, primero, totalPajaros = 2;
-	vector<int> vsol;
+	int p, cont;
 
-	//mientras haya pajaros que van llegando
-	while (i < (pajaros.size() / 2)) {
+	for (int i = 0; i < n; i++) {
+		cont = 0;
 
-		//para controlar que se unen en parejas
-		while (cont < totalPajaros) {
-			colap.push({ pajaros.at(cont) });
+		//leo de dos en dos pajaros
+		while (cont < 2) {
+			std::cin >> p;
+
+			if (p < cabeza) {
+				cola_menores.push(p);
+			}
+			else {
+				cola_mayores.push(p);
+			}
+
 			cont++;
 		}
 
-		totalPajaros += 2;
-
-		while (!colap.empty()) {
-			vsol.push_back(colap.top().edad);
-			colap.pop();
+		if (cola_mayores.size() > cola_menores.size()) {
+			cola_menores.push(cabeza);
+			cabeza = cola_mayores.top();
+			cola_mayores.pop();
+		}
+		else if(cola_mayores.size() < cola_menores.size()) {
+			cola_mayores.push(cabeza);
+			cabeza = cola_menores.top();
+			cola_menores.pop();
 		}
 
-		primero = vsol.size() / 2;
-		colap.push({ vsol[primero] });
-
-		std::cout << vsol[primero] << " ";
-
-		vsol.clear();
-		i++;
+		std::cout << cabeza << " ";
 	}
 }
 
 bool resuelveCaso() {
-	int cabeza, n, edad;
+	int cabeza, n;
 
 	std::cin >> cabeza >> n;
 
@@ -57,19 +65,7 @@ bool resuelveCaso() {
 		return false;
 	}
 
-	//cola de prioridad inicial (solo con el pajaro de cabeza)
-	PriorityQueue<tSolucion> colap;
-	colap.push({ cabeza });
-
-	//vector de pajaros que van uniendose
-	n = n * 2;
-	vector<int> pajaros;
-	for (int i = 0; i < n; i++) {
-		std::cin >> edad;
-		pajaros.push_back(edad);
-	}
-
-	resover(colap, pajaros);
+	resolver(cabeza, n);
 
 	std::cout << "\n";
 
