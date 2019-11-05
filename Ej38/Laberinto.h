@@ -36,7 +36,7 @@ private:
 
 	void ratones(int S, int T) {
 		for (int i = 0; i < distTo.size(); i++) {
-			if (i != S && distTo[i] <= T) {
+			if (distTo[i] <= T) {
 				cont++;
 			}
 		}
@@ -44,7 +44,7 @@ private:
 
 public:
 
-	Laberinto(GrafoDirigidoValorado<int> const& g, int S, int T) : distTo(g.V(), max), pq(g.V()), cont(0) {
+	Laberinto(GrafoDirigidoValorado<int> const& g, int S, int T) : distTo(g.V(), max), pq(g.V()), cont(-1) {
 		GrafoDirigidoValorado<int> gInv = g.inverso();
 		distTo[S] = 0;
 		pq.push(S, 0);
