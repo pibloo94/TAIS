@@ -17,16 +17,16 @@ bool operator<(tPelicula const& a, tPelicula const& b) {
 }
 
 int resolver(std::vector<tPelicula>& v) {
-	int npeliculas = 0;
-	int actual = 0;
-	
-	for (int i = 0; i < v.size(); i++) {
-		if (actual < v[i].hora) {
+	int npeliculas = 1;
+	int actual = v[0].duracion;
+
+	for (int i = 1; i < v.size(); i++) {
+		if (actual <= v[i].hora) {
 			npeliculas++;
 			actual = v[i].duracion;
 		}
 	}
-	
+
 	return npeliculas;
 }
 
@@ -39,17 +39,20 @@ bool resuelveCaso() {
 		return false;
 	}
 
-	int HH, MM, duracion;
+	int HH, MM, duracion, inicio;
 	char separador;
 	std::vector<tPelicula> v;
+
 	for (int i = 0; i < N; i++) {
 		std::cin >> HH >> separador >> MM;
 		std::cin >> duracion;
 
-		v.push_back({(HH*60) + MM, duracion + 10});
+		inicio = (HH * 60) + MM;
+		duracion = inicio + duracion + 10;
+		v.push_back({ inicio, duracion });
 	}
 
-	//std::sort(v.begin(), v.end(), std::less<tPelicula>());
+	std::sort(v.begin(), v.end(), std::less<tPelicula>());
 
 	int sol = resolver(v);
 
