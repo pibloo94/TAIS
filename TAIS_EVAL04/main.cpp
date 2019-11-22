@@ -39,6 +39,7 @@ int resolver(std::vector<int>& v, int& peso_maximo) {
 			ini++;
 		}
 		else{
+			min++;
 			end--;
 		}
 	}
