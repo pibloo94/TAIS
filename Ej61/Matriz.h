@@ -1,9 +1,9 @@
 //
 //  Matriz.h
 //
-//  Implementaci髇 de matrices (arrays bidimensionales)
+//  Implementaci贸n de matrices (arrays bidimensionales)
 //
-//  Facultad de Inform醫ica
+//  Facultad de Inform谩tica
 //  Universidad Complutense de Madrid
 //
 //  Created by Alberto Verdejo on 26/6/15.
@@ -22,19 +22,19 @@ public:
 	// con todas sus celdas inicializadas al valor e
 	Matriz(int fils, int cols, Object e = Object()) : datos(fils, std::vector<Object>(cols, e)) {}
 
-	// operadores para poder utilizar notaci髇 M[i][j]
+	// operadores para poder utilizar notaci贸n M[i][j]
 	std::vector<Object> const& operator[](int f) const {
 		return datos[f];
 	}
-	std::vector<Object> & operator[](int f) {
+	std::vector<Object>& operator[](int f) {
 		return datos[f];
 	}
 
-	// m閠odos que lanzan una excepci髇 si la posici髇 no existe
+	// m茅todos que lanzan una excepci贸n si la posici贸n no existe
 	Object const& at(int f, int c) const {
 		return datos.at(f).at(c);
 	}
-	Object & at(int f, int c) { // este m閠odo da problemas cuando Object == bool
+	Object& at(int f, int c) { // este m茅todo da problemas cuando Object == bool
 		return datos.at(f).at(c);
 	}
 
@@ -50,3 +50,4 @@ private:
 };
 
 #endif
+

@@ -1,10 +1,11 @@
-//PABLO AGUDO BRUN
+﻿//PABLO AGUDO BRUN
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
-#include <vector>
 #include <algorithm>
+#include <vector>
+
+#include "Matriz.h"
 
 using namespace std;
 
@@ -16,55 +17,55 @@ struct tCofre {
 };
 
 /*
-tesoro(i, j) = {
-			tesoro(i-1, j) sii cofre[i].profundidad*3 > j
-			max(tesoro(i-1, j), tesoro(i-1, j-cofre[i].profundidad + cofre[i].oro) sii cofre[i].profundidad*3 <= j
-			}
+Problema de la mochila (elegimos si rescatamos el cofre o no), se crea matriz con:
+- Filas = N (el numero de cofres)
+- Columnas = T (el tiempo de la botella)
+
+casos base:
+	- tesoros(0, j) = 0
+	- tesoros(i, 0) = 0
+
+casos recursivos:
+	- tesoros(i, j) = tesoros(i - 1, j)
+	- tesoros(i, j) = max(tesoros(i- 1, j) , tesoros(i-1, j-cofres[i].profundidad) + cofres[i].oro)
 */
-int maxOro(
-	std::vector <std::vector<int>>& matriz,
-	std::vector <tCofre>& cofres,
-	int const& T) {
 
-	int N = cofres.size() - 1;
+int cofresRescatados(std::vector<tCofre>& cofres, Matriz<int>& tabla, const int& T, std::vector<bool>& rescatados) {
+	int aux = T;
+	int n = cofres.size() - 1;
+	int nCofres = 0;
 
-	for (int i = 1; i <= N; i++) {
-		for (int j = 1; j <= T; j++) {
-			int coste = cofres[i].profundidad * 3;
-
-			if (coste > j) {
-				matriz[i][j] = matriz[i - 1][j];
-			}
-			else {
-				matriz[i][j] = std::max(matriz[i - 1][j], matriz[i - 1][j - coste] + cofres[i].oro);
-			}
+	for (int i = n; i >= 1; i--) {
+		if (tabla[i][aux] != tabla[i-1][aux]) {
+			rescatados[i] = true;
+			aux -= cofres[i].profundidad;
+			nCofres++;
 		}
 	}
 
-	return matriz[N][T];
+	return nCofres;
 }
 
-std::vector<bool> recuperados(
-	std::vector <std::vector<int>>& matriz,
-	std::vector <tCofre>& cofres,
-	const int& T,
-	int& recoger) {
+int cantMax(std::vector<tCofre>& cofres, Matriz<int>& tabla, const int& T){
+	int n = cofres.size() - 1;
 
-	std::vector<bool> v(matriz.size(), false);
-	int tiempo = T;
-
-	for (int i = matriz.size() - 1; i >= 1; i--) {
-		if (matriz[i][tiempo] != matriz[i - 1][tiempo]) {
-			v[i] = true;
-			tiempo -= cofres[i].profundidad * 3;
+	//recorremos la tabla y la vamos rellenando
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= T; j++) {
+			if (cofres[i].profundidad > j) {
+				tabla[i][j] = tabla[i - 1][j];
+			}
+			else {
+				tabla[i][j] = std::max(tabla[i-1][j], tabla[i-1][j-cofres[i].profundidad] + cofres[i].oro);
+			}
 		}
 	}
 
-	return v;
+	return tabla[n][T];
 }
 
 bool resuelveCaso() {
-	int T, N, profundidad, oro;
+	int N, T, profundidad, oro;
 
 	std::cin >> T;
 
@@ -74,35 +75,38 @@ bool resuelveCaso() {
 
 	std::cin >> N;
 
-	std::vector<tCofre> cofres(N + 1);
+	//vector de cofres con el oro y el tiempo (profundidad) que se tarda en cada uno
+	std::vector<tCofre> cofres;
+	cofres.push_back({ 0, 0 });
 
+	//relleno el vector de cofres
 	for (int i = 1; i <= N; i++) {
 		std::cin >> profundidad >> oro;
-		cofres.push_back({ profundidad, oro });
-	}
-	
-	std::vector <std::vector<int>> matriz(N + 1, std::vector<int>(T + 1, 0)); //Matriz
-
-	for (int i = 0; i <= N; i++) {
-		matriz[i][0] = 0;
+		cofres.push_back({ profundidad * 3, oro }); // profundidad = p (bajar) + 2p (subir) = 3 * profundidad
 	}
 
-	for (int j = 1; j <= T; j++) {
-		matriz[0][j] = 0;
+	//vector de rescatados que contiene aquellos cofres seleccionados
+	std::vector<bool> rescatados(N+1, false);
+	Matriz<int> tabla(N+1, T+1, 0);
+
+	int oroMax =cantMax(cofres, tabla, T);
+	int totalRescatados = cofresRescatados(cofres, tabla, T, rescatados);
+
+	if(totalRescatados == 0){
+		std::cout << "0\n0\n";
 	}
+	else {
+		std::cout << oroMax << "\n";
+		std::cout << totalRescatados << "\n";
 
-	std::cout << maxOro(matriz, cofres, T) << "\n";
-
-	int recoger = 0;
-	std::vector<bool> cofresRecuperados = recuperados(matriz, cofres, T, recoger);
-
-	for (int i = 1; i < cofresRecuperados.size(); i++) {
-		if (cofresRecuperados[i]) {
-			std::cout << cofres[i].profundidad << " " << cofres[i].oro << "\n";
+		for (int i = 0; i < rescatados.size(); i++) {
+			if (rescatados[i]) {
+				std::cout << cofres[i].profundidad / 3 << " " << cofres[i].oro << "\n";
+			}
 		}
 	}
 
-	std::cout << "----\n";
+	std::cout << "---\n";
 
 	return true;
 }
